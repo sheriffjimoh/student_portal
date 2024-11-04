@@ -30,8 +30,10 @@ class StudentController extends Controller
         ]);
 
         try {
+
+            $user = Auth::user();
             Enrollment::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'course_id' => $validated['course_id']
             ]);
 

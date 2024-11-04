@@ -6,18 +6,13 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return redirect()->route('home');
+});
 
 Auth::routes();
-
-// Test route to check role middleware directly
-Route::get('/test', function() {
-    dd(Auth::user(), Auth::user()->role);
-})->middleware(['auth', 'role:admin']);
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 
 Route::middleware('auth')->group(function () {
     // Common routes

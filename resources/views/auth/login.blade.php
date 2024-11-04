@@ -1,11 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="text-center my-3">
+                     <h3 class="text-lg font-bold "> Welcome to our school portal, Please login to proceed </h3>
+                </div>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>
+
+               
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">

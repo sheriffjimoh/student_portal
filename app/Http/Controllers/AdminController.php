@@ -42,7 +42,11 @@ class AdminController extends Controller
     public function studentCourses($id)
     {
         $student = User::findOrFail($id);
-        $courses = $student->courses()->paginate(10);
+        $courses = $student->courses()
+        ->withPivot('created_at')  
+        ->orderBy('enrollments.created_at', 'desc')  
+        ->paginate(10);
+
         return view('admin.student-courses', compact('student', 'courses'));
     }
 }
