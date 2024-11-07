@@ -24,6 +24,10 @@ composer install
 npm install
 npm run dev
 
+```
+3. Configure environment & application
+```bash
+
 // configure enviroment
 cp .env.example .env
 
