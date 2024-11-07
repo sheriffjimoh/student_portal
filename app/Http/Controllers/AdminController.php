@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Course;
-use App\Models\Enrollment;
 use Illuminate\Http\Request;
-
-
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -49,4 +47,39 @@ class AdminController extends Controller
 
         return view('admin.student-courses', compact('student', 'courses'));
     }
+
+    public function destroyCourse(User $student, Course $course)
+{
+    try {
+        // Check if the student is enrolled in the course
+        $enrollment = $student->courses()->where('course_id', $course->id)->first();
+        
+        if (!$enrollment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student is not enrolled in this course.'
+            ], 404);
+        }
+
+        // Remove the enrollment
+        $student->courses()->detach($course->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully removed {$student->name} from {$course->name}."
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error removing course enrollment', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while removing the enrollment.'
+        ], 500);
+    }
+}
 }

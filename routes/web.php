@@ -6,18 +6,21 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return redirect()->route('home');
+// Guest/Public Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/', function () {
+        return view('auth.login');
+    });
+    
+    Route::get('/home', function () {
+        return view('auth.login');
+    })->name('home');
 });
-
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
 Route::middleware('auth')->group(function () {
     // Common routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin routes with role middleware
     Route::prefix('admin')
@@ -27,6 +30,8 @@ Route::middleware('auth')->group(function () {
              Route::get('/students', [AdminController::class, 'students'])->name('admin.students');
              Route::get('/students/{id}/courses', [AdminController::class, 'studentCourses'])
                   ->name('admin.student.courses');
+           Route::delete('/students/{student}/courses/{course}', [AdminController::class, 'destroyCourse'])
+            ->name('admin.students.courses.destroy');
     });
 
     // Student routes with role middleware

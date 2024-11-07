@@ -55,49 +55,82 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle enrollment removal
-    document.querySelectorAll('.remove-enrollment').forEach(button => {
-        button.addEventListener('click', async function() {
-            if (!confirm('Are you sure you want to remove this enrollment?')) {
-                return;
-            }
+    const handleRemoveEnrollment = async (studentId, courseId, button) => {
+        try {
+            const response = await fetch(`/admin/students/${studentId}/courses/${courseId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
 
-            const studentId = this.dataset.studentId;
-            const courseId = this.dataset.courseId;
+            const data = await response.json();
 
-            try {
-                const response = await fetch(`/admin/students/${studentId}/courses/${courseId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-
-                const data = await response.json();
+            if (response.ok && data.success) {
+                // Remove the table row
+                const row = button.closest('tr');
+                row.style.transition = 'opacity 0.3s';
+                row.style.opacity = '0';
                 
-                if (data.success) {
-                    this.closest('tr').remove();
+                setTimeout(() => {
+                    row.remove();
                     
                     // Show success message
                     const alert = document.createElement('div');
-                    alert.className = 'alert alert-success';
-                    alert.textContent = data.message;
-                    document.querySelector('.card-body').insertBefore(alert, document.querySelector('.table-responsive'));
+                    alert.className = 'alert alert-success alert-dismissible fade show';
+                    alert.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
                     
+                    const tableResponsive = document.querySelector('.table-responsive');
+                    tableResponsive.parentNode.insertBefore(alert, tableResponsive);
+
                     // Remove message after 3 seconds
-                    setTimeout(() => alert.remove(), 3000);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while removing the enrollment.');
+                    setTimeout(() => {
+                        alert.style.transition = 'opacity 0.3s';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 300);
+                    }, 3000);
+                }, 300);
+            } else {
+                throw new Error(data.message || 'Failed to remove enrollment');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+            errorAlert.innerHTML = `
+                ${error.message || 'An error occurred while removing the enrollment.'}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const tableResponsive = document.querySelector('.table-responsive');
+            tableResponsive.parentNode.insertBefore(errorAlert, tableResponsive);
+            
+            setTimeout(() => {
+                errorAlert.style.transition = 'opacity 0.3s';
+                errorAlert.style.opacity = '0';
+                setTimeout(() => errorAlert.remove(), 300);
+            }, 3000);
+        }
+    };
+
+    // Add click event listeners to remove buttons
+    document.querySelectorAll('.remove-enrollment').forEach(button => {
+        button.addEventListener('click', function() {
+            const studentId = this.dataset.studentId;
+            const courseId = this.dataset.courseId;
+            
+            if (confirm('Are you sure you want to remove this enrollment?')) {
+                handleRemoveEnrollment(studentId, courseId, this);
             }
         });
     });
 });
 </script>
-@endpush
 @endsection

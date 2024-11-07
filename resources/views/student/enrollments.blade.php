@@ -1,48 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">My Enrollments</h5>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Course</th>
-                        <th>Enrolled Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($enrollments as $enrollment)
-                        <tr>
-                            <td>{{ $enrollment->course->name }}</td>
-                            <td>{{ $enrollment->created_at->format('M d, Y') }}</td>
-                            <td>
-                                <button class="btn btn-danger btn-sm unenroll-btn" 
-                                        data-course-id="{{ $enrollment->course_id }}">
-                                    Unenroll
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center">No enrollments found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="d-flex justify-content-center">
-            {{ $enrollments->links() }}
-        </div>
-    </div>
-</div>
 
-@push('scripts')
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -88,5 +48,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endpush
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">My Enrollments</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Enrolled Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($enrollments as $enrollment)
+                        <tr>
+                            <td>{{ $enrollment->course->name }}</td>
+                            <td>{{ $enrollment->created_at->format('M d, Y') }}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm unenroll-btn" 
+                                        data-course-id="{{ $enrollment->course_id }}">
+                                    Unenroll
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center">No enrollments found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            {{ $enrollments->links() }}
+        </div>
+    </div>
+</div>
+
+
 @endsection

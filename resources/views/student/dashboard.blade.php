@@ -71,7 +71,7 @@
     </div>
 </div>
 
-@push('scripts')
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Setup CSRF token for all AJAX requests
@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Unenroll functionality
     document.querySelectorAll('.unenroll-btn').forEach(button => {
         button.addEventListener('click', async function() {
             if (!confirm('Are you sure you want to unenroll from this course?')) {
@@ -147,5 +146,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
 @endsection
